@@ -1,3 +1,5 @@
+use rudit::App;
+
 fn main() {
-    println!("Hello, world!");
+    ratatui::run(|terminal| App::default().run(terminal))
 }
