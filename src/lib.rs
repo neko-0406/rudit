@@ -1,4 +1,7 @@
-use ratatui::{DefaultTerminal, Frame, widgets::Widget};
+use std::io::stdout;
+
+use crossterm::{ExecutableCommand, terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode}};
+use ratatui::{Frame, Terminal, prelude::CrosstermBackend, widgets::Widget};
 
 #[derive(Debug)]
 pub struct App {
@@ -12,11 +15,21 @@ impl App {
 }
 
 impl App {
-    pub fn run (&mut self, terminal: &mut DefaultTerminal) {
+    pub fn run (&mut self) -> Result<(), std::io::Error> {
+        let backend = CrosstermBackend::new(stdout());
+        let mut terminal = Terminal::new(backend)?;
+        
+        enable_raw_mode()?;
+        stdout().execute(EnterAlternateScreen)?;
+        
+        terminal.clear().unwrap();
         while !self.exit {
-            terminal.draw(|frame| self.draw(frame));
+            terminal.draw(|frame| self.draw(frame))?;
             self.handle_events();
         }
+        stdout().execute(LeaveAlternateScreen)?;
+        disable_raw_mode()?;
+        Ok(())
     }
     
     pub fn draw(&self, frame: &mut Frame) {

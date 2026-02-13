@@ -1,5 +1,5 @@
 use rudit::App;
 
 fn main() {
-    ratatui::run(|terminal| App::default().run(terminal))
+    ratatui::run(|_| App::default().run());
 }
